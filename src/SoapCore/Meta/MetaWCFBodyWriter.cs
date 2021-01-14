@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using SoapCore.ServiceModel;
+using DateTimeOffset = System.DateTimeOffset;
 
 namespace SoapCore.Meta
 {
@@ -609,10 +610,16 @@ namespace SoapCore.Meta
 				DiscoverTypes(type.Key, true);
 			}
 
-			var groupedByNamespace = _complexTypeToBuild.GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(k => k.Key));
+			if (_complexTypeToBuild.Remove(typeof(DateTimeOffset)))
+			{
+				_buildDateTimeOffset = true;
+			}
+
+			var groupedByNamespace = _complexTypeToBuild.Where(pair => pair.Key != typeof(DateTimeOffset)).GroupBy(x => x.Value).ToDictionary(x => x.Key, x => x.Select(k => k.Key));
 
 			foreach (var types in groupedByNamespace.Distinct())
 			{
+
 				writer.WriteStartElement("xs", "schema", Namespaces.XMLNS_XSD);
 				writer.WriteAttributeString("elementFormDefault", "qualified");
 				writer.WriteAttributeString("targetNamespace", GetModelNamespace(types.Key));
