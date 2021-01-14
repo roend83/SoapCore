@@ -110,7 +110,7 @@ namespace SoapCore
 				httpContext.Request.EnableBuffering();
 			}
 
-			var trailPathTuner = serviceProvider.GetServices<TrailingServicePathTuner>().FirstOrDefault();
+			var trailPathTuner = serviceProvider.GetServices<ITrailingServicePathTuner>().FirstOrDefault();
 
 			trailPathTuner?.ConvertPath(httpContext);
 
